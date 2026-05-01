@@ -1,4 +1,12 @@
 pandas
 numpy
 seaborn
+torch
+transformers
+scikit-learn
+matplotlib
+nltk
+scipy
+xgboost
+dill
 -e .
