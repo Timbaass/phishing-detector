@@ -1,6 +1,7 @@
 import os
 import sys
 
+from src.config.paths import RAW_DATA_DIR, PROCESSED_DATA_DIR
 from src.exception import CustomException
 from src.logger import logging
 
@@ -10,17 +11,11 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 
-BASE_DIR = os.path.dirname(
-    os.path.dirname(
-        os.path.dirname(os.path.abspath(__file__))
-    )
-)
-
 @dataclass
 class DataIngestionConfig:
-    raw_data_path: str = os.path.join(BASE_DIR, "data", "raw", "TREC-05.csv")
-    train_data_path: str = os.path.join(BASE_DIR, "data", "processed", "train.csv")
-    test_data_path: str = os.path.join(BASE_DIR, "data", "processed", "test.csv")
+    raw_data_path: str = os.path.join(RAW_DATA_DIR, "TREC-05.csv")
+    train_data_path: str = os.path.join(PROCESSED_DATA_DIR, "train.csv")
+    test_data_path: str = os.path.join(PROCESSED_DATA_DIR, "test.csv")
 
 class DataIngestion:
 
@@ -55,5 +50,5 @@ class DataIngestion:
                 self.data_ingestion_config.test_data_path
             )
 
-        except Exception as ex:
-            raise CustomException(ex, sys) 
+        except Exception as e:
+            raise CustomException(e, sys) 
