@@ -1,5 +1,5 @@
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
-import re, string
+import re
 
 URGENT_KEYWORDS = {
     "urgent",

@@ -20,7 +20,9 @@ class DataCleaner(BaseEstimator, TransformerMixin):
         if not text:
             return ""
         try:
-            text = BeautifulSoup(text, "html.parser").get_text() #HTML elemntlerinden kurtulur.
+            if "<" in text and ">" in text:
+                text = BeautifulSoup(text, "html.parser").get_text() #HTML elemntlerinden kurtulur.
+                
             text = contractions.fix(text) # İngilizce kelimeleri ayırır.
             
             text = str(text).lower()
