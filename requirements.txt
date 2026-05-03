@@ -9,4 +9,6 @@ nltk
 scipy
 xgboost
 dill
+bs4
+contractions
 -e .
