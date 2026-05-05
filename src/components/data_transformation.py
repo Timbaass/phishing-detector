@@ -89,7 +89,6 @@ class DataTransformation:
                 X_test_transformed,
                 y_train,
                 y_test,
-                self.data_transformation_config.preprocesser_obj_file_path,
             )
         except Exception as e:
             raise CustomException(e, sys)

@@ -2,7 +2,6 @@ import dill, sys, os
 from src.exception import CustomException
 
 from sklearn import metrics
-import pandas as pd
 
 def save_object(file_path: str, obj):
     """Save a object to disk."""
@@ -17,7 +16,7 @@ def save_object(file_path: str, obj):
     except Exception as e:
         raise CustomException(e, sys)
 
-def load_object(file_path: str, obj):
+def load_object(file_path: str):
     """Load a object from disk."""
     try:
         with open(file_path, "rb") as file_obj:
