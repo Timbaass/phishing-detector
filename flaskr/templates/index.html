@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Phishing Detector</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-1: #0f1e24;
+        --bg-2: #1c3941;
+        --bg-3: #f7efe2;
+        --accent: #f2b134;
+        --accent-2: #4fd1c5;
+        --ink: #0f1417;
+        --muted: #4d5b63;
+        --card: #ffffff;
+        --shadow: 0 18px 40px rgba(12, 20, 24, 0.18);
+        --radius: 18px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(1200px 900px at 10% 10%, #214d57 0%, var(--bg-1) 40%),
+          radial-gradient(900px 700px at 90% 5%, #1f2d36 0%, var(--bg-2) 55%),
+          linear-gradient(120deg, #f7efe2 0%, #f4e7d6 50%, #f8f1e7 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 20px;
+      }
+
+      .shell {
+        width: min(1100px, 100%);
+        display: grid;
+        gap: 28px;
+      }
+
+      .hero {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 20px;
+        color: #fef6eb;
+      }
+
+      .title {
+        font-family: "Fraunces", serif;
+        font-size: clamp(2.2rem, 4vw, 3.6rem);
+        margin: 0;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        margin: 10px 0 0;
+        font-size: 1.05rem;
+        max-width: 540px;
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      .pill {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          180px 140px at 90% 10%,
+          rgba(79, 209, 197, 0.12),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      label {
+        display: block;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #e1e4e8;
+        font-family: inherit;
+        font-size: 0.98rem;
+        background: #fdfdfc;
+      }
+
+      textarea {
+        min-height: 140px;
+        resize: vertical;
+      }
+
+      .row {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+
+      button {
+        padding: 12px 18px;
+        border-radius: 12px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+      }
+
+      .primary {
+        background: var(--accent);
+        color: #1a1a1a;
+      }
+
+      .ghost {
+        background: transparent;
+        border: 1px solid #d3d8de;
+        color: var(--muted);
+      }
+
+      .result {
+        display: grid;
+        gap: 16px;
+        min-height: 220px;
+      }
+
+      .status {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .status.normal {
+        color: #19764f;
+      }
+
+      .status.phishing {
+        color: #b83a1b;
+      }
+
+      .meter {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #c7d0d7;
+      }
+
+      .dot.active {
+        background: var(--accent-2);
+      }
+
+      .small {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .api-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 14px;
+      }
+
+      .api-row input {
+        flex: 1;
+      }
+
+      .fade-in {
+        animation: fadeIn 0.6s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="hero">
+        <div>
+          <h1 class="title">Email Risk Scanner</h1>
+          <p class="subtitle">
+            A simple interface for the phishing detection model. Paste an email,
+            analyze, and see the prediction instantly.
+          </p>
+        </div>
+        <span class="pill">phishing detector</span>
+      </div>
+
+      <div class="grid">
+        <form id="predict-form" class="card">
+          <div class="api-row">
+            <label for="apiBase">API Base (optional)</label>
+            <input
+              id="apiBase"
+              type="text"
+              placeholder="http://localhost:5000"
+              value="http://localhost:5000"
+            />
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="sender">Sender</label>
+              <input
+                id="sender"
+                name="sender"
+                placeholder="alerts@bank.com"
+                required
+              />
+            </div>
+            <div>
+              <label for="receiver">Receiver</label>
+              <input
+                id="receiver"
+                name="receiver"
+                placeholder="user@example.com"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="date">Date</label>
+              <input
+                id="date"
+                name="date"
+                placeholder="Fri, 29 Jun 2001 08:36:09 -0500"
+              />
+            </div>
+            <div>
+              <label for="subject">Subject</label>
+              <input
+                id="subject"
+                name="subject"
+                placeholder="Urgent account update"
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label for="body">Body</label>
+            <textarea
+              id="body"
+              name="body"
+              placeholder="Paste the email body here."
+              required
+            ></textarea>
+          </div>
+
+          <div class="actions">
+            <button class="primary" type="submit">Analyze email</button>
+            <button class="ghost" type="button" id="fillSample">
+              Use sample
+            </button>
+            <button class="ghost" type="reset">Clear</button>
+          </div>
+        </form>
+
+        <div class="card result" id="result">
+          <h3 class="status">No prediction yet</h3>
+          <div class="meter">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <p class="small">
+            Submit an email to see the classification. The API returns a binary
+            label:
+            <strong>1 = phishing</strong>, <strong>0 = normal</strong>.
+          </p>
+          <div class="small" id="rawResponse"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById("predict-form");
+      const result = document.getElementById("result");
+      const rawResponse = document.getElementById("rawResponse");
+      const dots = Array.from(document.querySelectorAll(".dot"));
+      const sampleButton = document.getElementById("fillSample");
+
+      const sampleData = {
+        sender: "alerts@bank.com",
+        receiver: "user@example.com",
+        date: "Fri, 29 Jun 2001 08:36:09 -0500",
+        subject: "Urgent: Verify your account",
+        body: "We detected unusual activity. Please verify your account at https://secure-bank.example.com",
+      };
+
+      function setResult(statusText, labelClass, payload) {
+        const status = result.querySelector(".status");
+        status.textContent = statusText;
+        status.className = `status ${labelClass}`;
+        result.classList.add("fade-in");
+        rawResponse.textContent = payload
+          ? JSON.stringify(payload, null, 2)
+          : "";
+      }
+
+      function setDots(count) {
+        dots.forEach((dot, index) => {
+          dot.classList.toggle("active", index < count);
+        });
+      }
+
+      sampleButton.addEventListener("click", () => {
+        Object.keys(sampleData).forEach((key) => {
+          const field = document.getElementById(key);
+          if (field) {
+            field.value = sampleData[key];
+          }
+        });
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const apiBase = document.getElementById("apiBase").value.trim();
+        const shouldFallback =
+          !apiBase && window.location.port && window.location.port !== "5000";
+        const resolvedBase = shouldFallback ? "http://localhost:5000" : apiBase;
+        const endpoint = `${resolvedBase || ""}/predict`;
+
+        const payload = {
+          sender: form.sender.value,
+          receiver: form.receiver.value,
+          date: form.date.value,
+          subject: form.subject.value,
+          body: form.body.value,
+        };
+
+        setResult("Analyzing...", "", null);
+        setDots(0);
+
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          const responseText = await response.text();
+          let data = {};
+
+          if (responseText) {
+            try {
+              data = JSON.parse(responseText);
+            } catch (parseError) {
+              data = { raw: responseText };
+            }
+          }
+
+          if (!response.ok) {
+            setResult("Error from API", "", data);
+            return;
+          }
+
+          const label = data.prediction === 1 ? "phishing" : "normal";
+          setResult(
+            label === "phishing" ? "Potential phishing" : "Likely safe",
+            label,
+            data,
+          );
+          setDots(label === "phishing" ? 5 : 2);
+        } catch (error) {
+          setResult("Request failed", "", { error: error.message });
+        }
+      });
+    </script>
+  </body>
+</html>
