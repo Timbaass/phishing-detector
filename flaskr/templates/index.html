@@ -185,6 +185,10 @@
         color: #b83a1b;
       }
 
+      .status.suspicious {
+        color: #c88900;
+      }
+
       .meter {
         display: flex;
         align-items: center;
@@ -329,9 +333,9 @@
             <span class="dot"></span>
           </div>
           <p class="small">
-            Submit an email to see the classification. The API returns a binary
-            label:
-            <strong>1 = phishing</strong>, <strong>0 = normal</strong>.
+            Submit an email to see the classification. The UI uses probability:
+            <strong>&lt; 50% safe</strong>, <strong>50-70% suspicious</strong>,
+            <strong>&gt; 70% phishing</strong>.
           </p>
           <div class="small" id="rawResponse"></div>
         </div>
@@ -421,13 +425,33 @@
             return;
           }
 
-          const label = data.prediction === 1 ? "phishing" : "normal";
-          setResult(
-            label === "phishing" ? "Potential phishing" : "Likely safe",
-            label,
-            data,
-          );
-          setDots(label === "phishing" ? 5 : 2);
+          const rawProbability = data.probability;
+          const probability = Number.isFinite(rawProbability)
+            ? rawProbability
+            : parseFloat(String(rawProbability || "").replace("%", ""));
+
+          let statusText = "Likely safe";
+          let labelClass = "normal";
+          let dotCount = 2;
+
+          if (Number.isFinite(probability)) {
+            if (probability >= 70) {
+              statusText = "Potential phishing";
+              labelClass = "phishing";
+              dotCount = 5;
+            } else if (probability >= 50) {
+              statusText = "Suspicious";
+              labelClass = "suspicious";
+              dotCount = 3;
+            }
+          } else if (data.prediction === 1) {
+            statusText = "Potential phishing";
+            labelClass = "phishing";
+            dotCount = 5;
+          }
+
+          setResult(statusText, labelClass, data);
+          setDots(dotCount);
         } catch (error) {
           setResult("Request failed", "", { error: error.message });
         }

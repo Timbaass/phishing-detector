@@ -23,16 +23,17 @@ class PredictPipeline:
     def __init__(self):
         self.predict_pipeline_config = PredictPipelineConfig()
 
-    def predict(self, input):
+    def predict(self, input_data):
         logging.info("Prediction Pipeline initiated.")
         try:
             model, preprocesser = self._load_artifacts()
-            scaled_input = preprocesser.transform(input)
+            scaled_input = preprocesser.transform(input_data)
             prediction = model.predict(scaled_input)
+            proba = self.get_predict_proba(model, scaled_input)
             
             logging.info("Prediction Pipeline completed.")
             
-            return prediction
+            return prediction, proba
         except Exception as e:
             raise CustomException(e, sys)
 
@@ -53,6 +54,21 @@ class PredictPipeline:
 
         return self.__class__._model_cache, self.__class__._preprocessor_cache
         
+    def get_predict_proba(self, model: object, scaled_input):
+        try:
+            if hasattr(model, "predict_proba"):
+                proba = model.predict_proba(scaled_input)
+                if proba is None:
+                    return None
+
+                if proba.ndim == 2 and proba.shape[1] > 1:
+                    return proba[:, 1]
+
+                return proba
+            
+            return None
+        except Exception as e:
+            raise CustomException(e, sys)
 
 @dataclass
 class CustomData:

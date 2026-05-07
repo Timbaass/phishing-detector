@@ -11,7 +11,6 @@ from dataclasses import dataclass
 from xgboost import XGBClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import LinearSVC
 
 @dataclass
 class ModelTrainerConfig:
@@ -26,7 +25,6 @@ class ModelTrainer:
             logging.info("Model training initiated.")
             models = {
                 "Random Forest Classifier Model": RandomForestClassifier(),
-                "LinerSVC Model": LinearSVC(),
                 "Logistic Regressor Model": LogisticRegression(max_iter=5000, solver="liblinear"),
                 "XGBClassifier Model": XGBClassifier() 
             }

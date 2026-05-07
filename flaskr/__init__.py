@@ -76,11 +76,17 @@ def create_app(test_config=None):
             )
 
             input_df = input_data.get_data_as_dataframe()
-            prediction = PredictPipeline().predict(input_df)
+            prediction, proba = PredictPipeline().predict(input_df)
             predicted_label = int(prediction[0])
 
+            if proba is not None and len(proba) > 0:
+                proba_percent = round(float(proba[0]) * 100, 2)
+            else:
+                proba_percent = None
+             
             return jsonify(
                 {
+                    "probability": proba_percent,
                     "prediction": predicted_label,
                     "label": "phishing" if predicted_label == 1 else "normal",
                 }
@@ -117,7 +123,7 @@ def create_app(test_config=None):
                 return jsonify({"error": "records missing required fields", "details": invalid_records}), 400
 
             input_df = pd.DataFrame(records)
-            prediction = PredictPipeline().predict(input_df)
+            prediction, _ = PredictPipeline().predict(input_df)
 
             results = []
             for record, predicted_label in zip(records, prediction):
