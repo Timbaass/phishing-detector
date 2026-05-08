@@ -2,6 +2,7 @@
 
 > End-to-end phishing email detection with a Flask API and lightweight web UI.  
 > Covers data ingestion, feature engineering, model training, and real-time inference.
+<img width="1915" height="912" alt="image" src="https://github.com/user-attachments/assets/9b59a403-64af-4186-a32e-ff045a5e7a2f" />
 
 ---
 
