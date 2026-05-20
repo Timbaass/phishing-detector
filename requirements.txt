@@ -1,8 +1,6 @@
 pandas
 numpy
 seaborn
-torch
-transformers
 scikit-learn
 matplotlib
 nltk
@@ -12,4 +10,6 @@ dill
 bs4
 contractions
 flask
+requests
+python-dotenv
 -e .
