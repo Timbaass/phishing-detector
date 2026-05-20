@@ -4,22 +4,27 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Phishing Detector</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap"
-      rel="stylesheet"
-    />
     <style>
       :root {
-        --bg-1: #0f1e24;
-        --bg-2: #1c3941;
-        --bg-3: #f7efe2;
-        --accent: #f2b134;
-        --accent-2: #4fd1c5;
-        --ink: #0f1417;
-        --muted: #4d5b63;
-        --card: #ffffff;
-        --shadow: 0 18px 40px rgba(12, 20, 24, 0.18);
-        --radius: 18px;
+        --bg: #f4f7fb;
+        --surface: #ffffff;
+        --surface-soft: #f8fafc;
+        --ink: #111827;
+        --muted: #64748b;
+        --border: #dbe3ef;
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --shadow: 0 14px 34px rgba(15, 23, 42, 0.1);
+        --radius: 8px;
+        --safe-bg: #eaf8f0;
+        --safe-ink: #166534;
+        --safe-border: #9ad7b2;
+        --warning-bg: #fff7df;
+        --warning-ink: #92400e;
+        --warning-border: #f5c76b;
+        --danger-bg: #fff0f0;
+        --danger-ink: #b91c1c;
+        --danger-border: #f2a2a2;
       }
 
       * {
@@ -28,202 +33,529 @@
 
       body {
         margin: 0;
-        font-family: "Space Grotesk", sans-serif;
+        min-height: 100vh;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
         color: var(--ink);
         background:
-          radial-gradient(1200px 900px at 10% 10%, #214d57 0%, var(--bg-1) 40%),
-          radial-gradient(900px 700px at 90% 5%, #1f2d36 0%, var(--bg-2) 55%),
-          linear-gradient(120deg, #f7efe2 0%, #f4e7d6 50%, #f8f1e7 100%);
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 48px 20px;
+          linear-gradient(180deg, #eef4ff 0, rgba(238, 244, 255, 0) 320px),
+          var(--bg);
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
       }
 
       .shell {
-        width: min(1100px, 100%);
-        display: grid;
-        gap: 28px;
+        display: flex;
+        flex-direction: column;
+        width: min(1180px, 100%);
+        min-height: 100vh;
+        margin: 0 auto;
+        padding: 24px 18px;
       }
 
-      .hero {
+      .topbar {
         display: flex;
-        flex-wrap: wrap;
         align-items: flex-end;
+        justify-content: space-between;
         gap: 20px;
-        color: #fef6eb;
+        margin-bottom: 18px;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--primary-dark);
+        font-size: 0.9rem;
+        font-weight: 700;
       }
 
       .title {
-        font-family: "Fraunces", serif;
-        font-size: clamp(2.2rem, 4vw, 3.6rem);
         margin: 0;
-        letter-spacing: -0.02em;
+        font-size: 2.15rem;
+        line-height: 1.05;
       }
 
       .subtitle {
-        margin: 10px 0 0;
-        font-size: 1.05rem;
-        max-width: 540px;
-        color: rgba(255, 255, 255, 0.78);
+        max-width: 640px;
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 0.98rem;
+        line-height: 1.45;
       }
 
-      .pill {
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 8px 14px;
+      .system-chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 34px;
+        padding: 7px 12px;
+        border: 1px solid #b8cae6;
         border-radius: 999px;
-        font-size: 0.85rem;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
+        background: rgba(255, 255, 255, 0.72);
+        color: #29415f;
+        font-size: 0.9rem;
+        font-weight: 700;
+        white-space: nowrap;
       }
 
-      .grid {
+      .layout {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        flex: 1;
+        grid-template-columns: minmax(320px, 0.9fr) minmax(360px, 1.25fr);
         gap: 24px;
+        align-items: start;
       }
 
-      .card {
-        background: var(--card);
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
         border-radius: var(--radius);
         box-shadow: var(--shadow);
-        padding: 24px;
-        position: relative;
-        overflow: hidden;
       }
 
-      .card::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(
-          180px 140px at 90% 10%,
-          rgba(79, 209, 197, 0.12),
-          transparent 70%
-        );
-        pointer-events: none;
+      .form-panel,
+      .result-panel {
+        padding: 18px;
+      }
+
+      .form-panel {
+        align-self: start;
+        min-height: calc(100vh - 183px);
+      }
+
+      .panel-heading {
+        margin: 0 0 14px;
+        font-size: 1.15rem;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 12px;
       }
 
       label {
-        display: block;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: var(--muted);
-        margin-bottom: 6px;
+        color: #40516a;
+        font-size: 0.9rem;
+        font-weight: 700;
       }
 
       input,
-      textarea,
-      select {
+      textarea {
         width: 100%;
-        padding: 12px 14px;
-        border-radius: 12px;
-        border: 1px solid #e1e4e8;
-        font-family: inherit;
-        font-size: 0.98rem;
-        background: #fdfdfc;
+        border: 1px solid #cfd8e6;
+        border-radius: var(--radius);
+        background: #ffffff;
+        color: var(--ink);
+        padding: 10px 12px;
+        outline: none;
+        transition:
+          border-color 160ms ease,
+          box-shadow 160ms ease;
       }
 
       textarea {
-        min-height: 140px;
+        min-height: 132px;
         resize: vertical;
       }
 
-      .row {
-        display: grid;
-        gap: 16px;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      input:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
       }
 
       .actions {
         display: flex;
-        gap: 12px;
         flex-wrap: wrap;
-        margin-top: 12px;
+        gap: 10px;
+        margin-top: 4px;
       }
 
       button {
-        padding: 12px 18px;
-        border-radius: 12px;
-        border: none;
-        font-weight: 600;
+        min-height: 44px;
+        border: 0;
+        border-radius: var(--radius);
+        padding: 11px 16px;
         cursor: pointer;
-        font-family: inherit;
+        font-weight: 800;
+        transition:
+          transform 160ms ease,
+          background 160ms ease,
+          opacity 160ms ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+        transform: none;
       }
 
       .primary {
-        background: var(--accent);
-        color: #1a1a1a;
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .primary:hover {
+        background: var(--primary-dark);
       }
 
       .ghost {
-        background: transparent;
-        border: 1px solid #d3d8de;
-        color: var(--muted);
+        border: 1px solid #cfd8e6;
+        background: #ffffff;
+        color: #40516a;
       }
 
-      .result {
-        display: grid;
-        gap: 16px;
-        min-height: 220px;
-      }
-
-      .status {
-        font-size: 1.4rem;
-        font-weight: 700;
-        margin: 0;
-      }
-
-      .status.normal {
-        color: #19764f;
-      }
-
-      .status.phishing {
-        color: #b83a1b;
-      }
-
-      .status.suspicious {
-        color: #c88900;
-      }
-
-      .meter {
+      .result-panel {
         display: flex;
-        align-items: center;
-        gap: 10px;
+        flex-direction: column;
+        min-height: calc(100vh - 183px);
       }
 
-      .dot {
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: #c7d0d7;
-      }
-
-      .dot.active {
-        background: var(--accent-2);
-      }
-
-      .small {
-        color: var(--muted);
-        font-size: 0.9rem;
-      }
-
-      .api-row {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        margin-bottom: 14px;
-      }
-
-      .api-row input {
+      .empty-state,
+      .loading-state,
+      .error-state {
         flex: 1;
+        display: grid;
+        place-items: center;
+        min-height: 0;
+        text-align: center;
+      }
+
+      .empty-state-inner,
+      .loading-state-inner,
+      .error-state-inner {
+        max-width: 420px;
+      }
+
+      .empty-icon,
+      .error-icon {
+        display: inline-grid;
+        place-items: center;
+        width: 58px;
+        height: 58px;
+        margin-bottom: 16px;
+        border-radius: 50%;
+        background: #edf4ff;
+        color: var(--primary-dark);
+        font-size: 1.65rem;
+        font-weight: 900;
+      }
+
+      .empty-state h2,
+      .loading-state h2,
+      .error-state h2 {
+        margin: 0 0 10px;
+        font-size: 1.4rem;
+      }
+
+      .empty-state p,
+      .loading-state p,
+      .error-state p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        margin: 0 auto 18px;
+        border: 4px solid #dbeafe;
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 850ms linear infinite;
+      }
+
+      .result-card {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-top-width: 5px;
+        border-radius: var(--radius);
+        background: #ffffff;
+        overflow: hidden;
+      }
+
+      .result-card.risk-low {
+        border-top-color: #22c55e;
+      }
+
+      .result-card.risk-medium {
+        border-top-color: #f59e0b;
+      }
+
+      .result-card.risk-high {
+        border-top-color: #ef4444;
+      }
+
+      .result-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, #ffffff, #f8fafc);
+      }
+
+      .result-kicker {
+        margin: 0 0 7px;
+        color: var(--muted);
+        font-size: 0.88rem;
+        font-weight: 800;
+      }
+
+      .result-title {
+        margin: 0;
+        font-size: 1.55rem;
+        line-height: 1.25;
+      }
+
+      .risk-badge,
+      .label-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 32px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .risk-badge.risk-low {
+        background: var(--safe-bg);
+        border-color: var(--safe-border);
+        color: var(--safe-ink);
+      }
+
+      .risk-badge.risk-medium {
+        background: var(--warning-bg);
+        border-color: var(--warning-border);
+        color: var(--warning-ink);
+      }
+
+      .risk-badge.risk-high {
+        background: var(--danger-bg);
+        border-color: var(--danger-border);
+        color: var(--danger-ink);
+      }
+
+      .result-body {
+        display: grid;
+        gap: 18px;
+        padding: 20px;
+      }
+
+      .snapshot {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .metric {
+        min-height: 86px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface-soft);
+        padding: 14px;
+      }
+
+      .metric span {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 0.86rem;
+        font-weight: 800;
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 1.45rem;
+        line-height: 1.15;
+      }
+
+      .label-badge.label-safe,
+      .label-badge.label-normal {
+        background: var(--safe-bg);
+        border-color: var(--safe-border);
+        color: var(--safe-ink);
+      }
+
+      .label-badge.label-suspicious {
+        background: var(--warning-bg);
+        border-color: var(--warning-border);
+        color: var(--warning-ink);
+      }
+
+      .label-badge.label-phishing {
+        background: var(--danger-bg);
+        border-color: var(--danger-border);
+        color: var(--danger-ink);
+      }
+
+      .explanation-section {
+        display: grid;
+        gap: 9px;
+      }
+
+      .explanation-section h3 {
+        margin: 0;
+        font-size: 1rem;
+      }
+
+      .explanation-section p {
+        margin: 0;
+        color: #334155;
+        line-height: 1.65;
+      }
+
+      .detail-list {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .detail-list li {
+        position: relative;
+        padding: 10px 12px 10px 34px;
+        border: 1px solid #e4eaf3;
+        border-radius: var(--radius);
+        background: #ffffff;
+        color: #334155;
+        line-height: 1.45;
+      }
+
+      .detail-list li::before {
+        content: "";
+        position: absolute;
+        top: 17px;
+        left: 14px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--primary);
+      }
+
+      .callout {
+        border: 1px solid #bfd2ee;
+        border-radius: var(--radius);
+        background: #f3f7ff;
+        padding: 14px;
+      }
+
+      .callout.recommendation {
+        border-color: #f3cf77;
+        background: #fff9e8;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .advanced {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: #ffffff;
+      }
+
+      .advanced summary {
+        cursor: pointer;
+        padding: 14px 16px;
+        color: #243247;
+        font-weight: 900;
+      }
+
+      .advanced-content {
+        display: grid;
+        gap: 14px;
+        padding: 0 16px 16px;
+        border-top: 1px solid var(--border);
+      }
+
+      .advanced-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .advanced-item {
+        border: 1px solid #e4eaf3;
+        border-radius: var(--radius);
+        background: var(--surface-soft);
+        padding: 12px;
+      }
+
+      .advanced-item span {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 0.84rem;
+        font-weight: 800;
+      }
+
+      .advanced-item strong {
+        display: block;
+        font-size: 1.08rem;
+      }
+
+      .url-list {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .url-list li {
+        overflow-wrap: anywhere;
+        border: 1px solid #e4eaf3;
+        border-radius: var(--radius);
+        background: var(--surface-soft);
+        padding: 10px 12px;
+        color: #334155;
+      }
+
+      .error-state .error-icon {
+        background: var(--danger-bg);
+        color: var(--danger-ink);
+      }
+
+      .error-box {
+        margin-top: 14px;
+        border: 1px solid var(--danger-border);
+        border-radius: var(--radius);
+        background: var(--danger-bg);
+        color: var(--danger-ink);
+        padding: 12px;
+        text-align: left;
+        overflow-wrap: anywhere;
       }
 
       .fade-in {
-        animation: fadeIn 0.6s ease-out;
+        animation: fadeIn 220ms ease-out;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       @keyframes fadeIn {
@@ -236,35 +568,78 @@
           transform: translateY(0);
         }
       }
+
+      @media (max-width: 900px) {
+        .shell {
+          min-height: auto;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .layout {
+          flex: initial;
+          grid-template-columns: 1fr;
+        }
+
+        .form-panel {
+          min-height: auto;
+        }
+
+        .result-panel {
+          min-height: 360px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .shell {
+          padding: 20px 12px 32px;
+        }
+
+        .title {
+          font-size: 2rem;
+        }
+
+        .field-grid,
+        .snapshot,
+        .advanced-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .form-panel,
+        .result-panel {
+          padding: 16px;
+        }
+      }
     </style>
   </head>
   <body>
-    <div class="shell">
-      <div class="hero">
+    <main class="shell">
+      <header class="topbar">
         <div>
+          <p class="eyebrow">Security dashboard</p>
           <h1 class="title">Email Risk Scanner</h1>
           <p class="subtitle">
-            A simple interface for the phishing detection model. Paste an email,
-            analyze, and see the prediction instantly.
+            Review phishing risk with a plain-language AI explanation, model
+            confidence, and URL reputation details in one place.
           </p>
         </div>
-        <span class="pill">phishing detector</span>
-      </div>
+        <span class="system-chip">Flask API</span>
+      </header>
 
-      <div class="grid">
-        <form id="predict-form" class="card">
-          <div class="api-row">
-            <label for="apiBase">API Base (optional)</label>
-            <input
-              id="apiBase"
-              type="text"
-              placeholder="http://localhost:5000"
-              value="http://localhost:5000"
-            />
-          </div>
+      <section class="layout" aria-label="Email phishing analysis">
+        <form id="predict-form" class="panel form-panel">
+          <h2 class="panel-heading">Email details</h2>
 
-          <div class="row">
-            <div>
+          <div class="field-grid">
+            <div class="field">
               <label for="sender">Sender</label>
               <input
                 id="sender"
@@ -273,7 +648,7 @@
                 required
               />
             </div>
-            <div>
+            <div class="field">
               <label for="receiver">Receiver</label>
               <input
                 id="receiver"
@@ -284,8 +659,8 @@
             </div>
           </div>
 
-          <div class="row">
-            <div>
+          <div class="field-grid">
+            <div class="field">
               <label for="date">Date</label>
               <input
                 id="date"
@@ -293,7 +668,7 @@
                 placeholder="Fri, 29 Jun 2001 08:36:09 -0500"
               />
             </div>
-            <div>
+            <div class="field">
               <label for="subject">Subject</label>
               <input
                 id="subject"
@@ -304,7 +679,7 @@
             </div>
           </div>
 
-          <div>
+          <div class="field">
             <label for="body">Body</label>
             <textarea
               id="body"
@@ -315,81 +690,444 @@
           </div>
 
           <div class="actions">
-            <button class="primary" type="submit">Analyze email</button>
-            <button class="ghost" type="button" id="fillSample">
-              Use sample
+            <button class="primary" type="submit" id="submitButton">
+              Analyze email
             </button>
             <button class="ghost" type="reset">Clear</button>
           </div>
         </form>
 
-        <div class="card result" id="result">
-          <h3 class="status">No prediction yet</h3>
-          <div class="meter">
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
+        <section class="panel result-panel" id="result" aria-live="polite">
+          <div class="empty-state">
+            <div class="empty-state-inner">
+              <span class="empty-icon">?</span>
+              <h2>No analysis yet</h2>
+              <p>
+                The AI explanation, final label, confidence score, and advanced
+                security details will appear here after submission.
+              </p>
+            </div>
           </div>
-          <p class="small">
-            Submit an email to see the classification. The UI uses probability:
-            <strong>&lt; 50% safe</strong>, <strong>50-70% suspicious</strong>,
-            <strong>&gt; 70% phishing</strong>.
-          </p>
-          <div class="small" id="rawResponse"></div>
-        </div>
-      </div>
-    </div>
+        </section>
+      </section>
+    </main>
 
     <script>
       const form = document.getElementById("predict-form");
       const result = document.getElementById("result");
-      const rawResponse = document.getElementById("rawResponse");
-      const dots = Array.from(document.querySelectorAll(".dot"));
-      const sampleButton = document.getElementById("fillSample");
+      const submitButton = document.getElementById("submitButton");
 
-      const sampleData = {
-        sender: "alerts@bank.com",
-        receiver: "user@example.com",
-        date: "Fri, 29 Jun 2001 08:36:09 -0500",
-        subject: "Urgent: Verify your account",
-        body: "We detected unusual activity. Please verify your account at https://secure-bank.example.com",
-      };
-
-      function setResult(statusText, labelClass, payload) {
-        const status = result.querySelector(".status");
-        status.textContent = statusText;
-        status.className = `status ${labelClass}`;
-        result.classList.add("fade-in");
-        rawResponse.textContent = payload
-          ? JSON.stringify(payload, null, 2)
-          : "";
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
       }
 
-      function setDots(count) {
-        dots.forEach((dot, index) => {
-          dot.classList.toggle("active", index < count);
-        });
+      function parsePercent(value) {
+        if (typeof value === "number") {
+          return value;
+        }
+
+        if (typeof value === "string") {
+          const parsed = parseFloat(value.replace("%", ""));
+          return Number.isFinite(parsed) ? parsed : null;
+        }
+
+        return null;
       }
 
-      sampleButton.addEventListener("click", () => {
-        Object.keys(sampleData).forEach((key) => {
-          const field = document.getElementById(key);
-          if (field) {
-            field.value = sampleData[key];
+      function formatPercent(value) {
+        const parsed = parsePercent(value);
+
+        if (parsed === null) {
+          return value === null || value === undefined || value === ""
+            ? "Not available"
+            : String(value);
+        }
+
+        const rounded = Number.isInteger(parsed)
+          ? String(parsed)
+          : parsed.toFixed(2).replace(/\.?0+$/, "");
+
+        return `${rounded}%`;
+      }
+
+      function humanize(value, fallback = "Not available") {
+        if (value === null || value === undefined || value === "") {
+          return fallback;
+        }
+
+        const text = String(value).replace(/[_-]+/g, " ").trim();
+        if (!text) {
+          return fallback;
+        }
+
+        return text
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+      }
+
+      function labelClass(label) {
+        const normalized = String(label || "").toLowerCase();
+
+        if (normalized.includes("phish")) {
+          return "label-phishing";
+        }
+
+        if (normalized.includes("susp")) {
+          return "label-suspicious";
+        }
+
+        if (normalized.includes("safe")) {
+          return "label-safe";
+        }
+
+        if (normalized.includes("normal")) {
+          return "label-normal";
+        }
+
+        return "";
+      }
+
+      function displayLabel(data) {
+        const label = data?.label;
+
+        if (typeof label === "string" && label.toLowerCase() === "normal") {
+          return "Likely Safe";
+        }
+
+        if (label !== null && label !== undefined && label !== "") {
+          return humanize(label);
+        }
+
+        if (data?.prediction === 1) {
+          return "Phishing";
+        }
+
+        if (data?.prediction === 0) {
+          return "Likely Safe";
+        }
+
+        return "Unknown";
+      }
+
+      function riskLevel(data) {
+        const explicitRisk = data?.ai_explanation?.risk_level;
+
+        if (typeof explicitRisk === "string") {
+          const normalized = explicitRisk.trim().toLowerCase();
+
+          if (["low", "medium", "high"].includes(normalized)) {
+            return humanize(normalized);
           }
-        });
+        }
+
+        const label = String(data?.label || "").toLowerCase();
+        const probability = parsePercent(data?.probability);
+
+        if (label.includes("phish") || probability >= 70) {
+          return "High";
+        }
+
+        if (label.includes("susp") || probability >= 50) {
+          return "Medium";
+        }
+
+        return "Low";
+      }
+
+      function riskClass(level) {
+        return `risk-${String(level || "low").toLowerCase()}`;
+      }
+
+      function listFrom(value) {
+        if (Array.isArray(value)) {
+          return value.filter((item) => item !== null && item !== undefined);
+        }
+
+        if (typeof value === "string" && value.trim()) {
+          return [value.trim()];
+        }
+
+        return [];
+      }
+
+      function formatListItem(item) {
+        if (typeof item === "string" || typeof item === "number") {
+          return String(item);
+        }
+
+        if (item && typeof item === "object") {
+          return JSON.stringify(item);
+        }
+
+        return "Not available";
+      }
+
+      function renderDetailList(items, emptyText) {
+        if (!items.length) {
+          return `<p class="muted">${escapeHtml(emptyText)}</p>`;
+        }
+
+        return `
+          <ul class="detail-list">
+            ${items
+              .map((item) => `<li>${escapeHtml(formatListItem(item))}</li>`)
+              .join("")}
+          </ul>
+        `;
+      }
+
+      function formatUrlItem(item) {
+        if (typeof item === "string") {
+          return item;
+        }
+
+        if (item && typeof item === "object") {
+          const parts = [];
+
+          if (item.url) {
+            parts.push(item.url);
+          }
+
+          if (item.score !== null && item.score !== undefined) {
+            parts.push(`score: ${formatPercent(item.score)}`);
+          }
+
+          if (item.stats && typeof item.stats === "object") {
+            const stats = Object.entries(item.stats)
+              .map(([key, value]) => `${key}: ${value}`)
+              .join(", ");
+
+            if (stats) {
+              parts.push(`stats: ${stats}`);
+            }
+          }
+
+          if (item.analysis_url) {
+            parts.push(`report: ${item.analysis_url}`);
+          }
+
+          return parts.length ? parts.join(" | ") : JSON.stringify(item);
+        }
+
+        return "Not available";
+      }
+
+      function renderUrlList(urls) {
+        if (!urls.length) {
+          return '<p class="muted">No checked URLs returned.</p>';
+        }
+
+        return `
+          <ul class="url-list">
+            ${urls
+              .map((item) => `<li>${escapeHtml(formatUrlItem(item))}</li>`)
+              .join("")}
+          </ul>
+        `;
+      }
+
+      function renderEmptyState() {
+        result.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-inner">
+              <span class="empty-icon">?</span>
+              <h2>No analysis yet</h2>
+              <p>
+                The AI explanation, final label, confidence score, and advanced
+                security details will appear here after submission.
+              </p>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderLoading() {
+        result.innerHTML = `
+          <div class="loading-state">
+            <div class="loading-state-inner">
+              <div class="spinner" aria-hidden="true"></div>
+              <h2>Analyzing email</h2>
+              <p>Checking the model result and URL reputation signals.</p>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderError(message, details) {
+        const detailText =
+          details?.error || details?.details || details?.raw || message;
+
+        result.innerHTML = `
+          <div class="error-state fade-in">
+            <div class="error-state-inner">
+              <span class="error-icon">!</span>
+              <h2>Analysis failed</h2>
+              <p>${escapeHtml(message)}</p>
+              <div class="error-box">${escapeHtml(detailText)}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderAdvancedDetails(data) {
+        const technical = data?.technical_details || {};
+        const urls = listFrom(technical.vt_urls);
+        const errorMarkup = technical.vt_error
+          ? `
+            <div class="advanced-item">
+              <span>VirusTotal error</span>
+              <strong>${escapeHtml(technical.vt_error)}</strong>
+            </div>
+          `
+          : "";
+
+        return `
+          <details class="advanced">
+            <summary>Advanced Details</summary>
+            <div class="advanced-content">
+              <div class="advanced-grid">
+                <div class="advanced-item">
+                  <span>Model probability</span>
+                  <strong>${escapeHtml(
+                    formatPercent(technical.model_probability),
+                  )}</strong>
+                </div>
+                <div class="advanced-item">
+                  <span>VirusTotal probability</span>
+                  <strong>${escapeHtml(
+                    formatPercent(technical.vt_probability),
+                  )}</strong>
+                </div>
+                ${errorMarkup}
+              </div>
+              <div class="explanation-section">
+                <h3>Checked URLs</h3>
+                ${renderUrlList(urls)}
+              </div>
+            </div>
+          </details>
+        `;
+      }
+
+      function renderResult(data) {
+        const explanation =
+          data?.ai_explanation && typeof data.ai_explanation === "object"
+            ? data.ai_explanation
+            : null;
+        const hasExplanation =
+          explanation && Object.keys(explanation).length > 0;
+        const label = displayLabel(data || {});
+        const level = riskLevel(data || {});
+        const risk = riskClass(level);
+        const title = hasExplanation
+          ? explanation.title || "AI explanation"
+          : "Detection result";
+        const probability = formatPercent(data?.probability);
+        const summary = hasExplanation
+          ? explanation.summary || "No summary returned."
+          : `AI explanation was not included. Basic result: ${label} with ${probability} confidence.`;
+        const whyDetected = hasExplanation
+          ? listFrom(explanation.why_detected)
+          : [];
+        const urlAnalysis = hasExplanation
+          ? listFrom(explanation.url_analysis)
+          : [];
+        const explanationMarkup = hasExplanation
+          ? `
+              <section class="explanation-section">
+                <h3>Why detected</h3>
+                ${renderDetailList(
+                  whyDetected,
+                  "No detection reasons returned.",
+                )}
+              </section>
+
+              <section class="explanation-section">
+                <h3>URL analysis</h3>
+                ${renderDetailList(urlAnalysis, "No URL analysis returned.")}
+              </section>
+
+              <section class="explanation-section callout recommendation">
+                <h3>Recommendation</h3>
+                <p>${escapeHtml(
+                  explanation.recommendation ||
+                    "No recommendation returned.",
+                )}</p>
+              </section>
+
+              <section class="explanation-section callout">
+                <h3>Technical note</h3>
+                <p>${escapeHtml(
+                  explanation.technical_note || "No technical note returned.",
+                )}</p>
+              </section>
+            `
+          : `
+              <section class="explanation-section callout">
+                <h3>AI explanation unavailable</h3>
+                <p>
+                  The API response did not include ai_explanation, so this
+                  panel is showing the final label and probability returned by
+                  the backend.
+                </p>
+              </section>
+            `;
+
+        result.innerHTML = `
+          <article class="result-card ${risk} fade-in">
+            <header class="result-header">
+              <div>
+                <p class="result-kicker">${
+                  hasExplanation ? "AI explanation" : "Basic result"
+                }</p>
+                <h2 class="result-title">${escapeHtml(title)}</h2>
+              </div>
+              <span class="risk-badge ${risk}">${escapeHtml(level)}</span>
+            </header>
+
+            <div class="result-body">
+              <div class="snapshot" aria-label="Result summary">
+                <div class="metric">
+                  <span>Final label</span>
+                  <strong>
+                    <span class="label-badge ${labelClass(label)}">
+                      ${escapeHtml(label)}
+                    </span>
+                  </strong>
+                </div>
+                <div class="metric">
+                  <span>Probability score</span>
+                  <strong>${escapeHtml(probability)}</strong>
+                </div>
+              </div>
+
+              <section class="explanation-section">
+                <h3>Summary</h3>
+                <p>${escapeHtml(summary)}</p>
+              </section>
+
+              ${explanationMarkup}
+
+              ${renderAdvancedDetails(data || {})}
+            </div>
+          </article>
+        `;
+      }
+
+      form.addEventListener("reset", () => {
+        window.setTimeout(renderEmptyState, 0);
       });
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        const apiBase = document.getElementById("apiBase").value.trim();
-        const shouldFallback =
-          !apiBase && window.location.port && window.location.port !== "5000";
-        const resolvedBase = shouldFallback ? "http://localhost:5000" : apiBase;
-        const endpoint = `${resolvedBase || ""}/predict`;
+        const endpoint = "/predict";
 
         const payload = {
           sender: form.sender.value,
@@ -399,8 +1137,10 @@
           body: form.body.value,
         };
 
-        setResult("Analyzing...", "", null);
-        setDots(0);
+        submitButton.disabled = true;
+        submitButton.textContent = "Analyzing...";
+        form.setAttribute("aria-busy", "true");
+        renderLoading();
 
         try {
           const response = await fetch(endpoint, {
@@ -421,39 +1161,19 @@
           }
 
           if (!response.ok) {
-            setResult("Error from API", "", data);
+            renderError("The API returned an error response.", data);
             return;
           }
 
-          const rawProbability = data.probability;
-          const probability = Number.isFinite(rawProbability)
-            ? rawProbability
-            : parseFloat(String(rawProbability || "").replace("%", ""));
-
-          let statusText = "Likely safe";
-          let labelClass = "normal";
-          let dotCount = 2;
-
-          if (Number.isFinite(probability)) {
-            if (probability >= 70) {
-              statusText = "Potential phishing";
-              labelClass = "phishing";
-              dotCount = 5;
-            } else if (probability >= 50) {
-              statusText = "Suspicious";
-              labelClass = "suspicious";
-              dotCount = 3;
-            }
-          } else if (data.prediction === 1) {
-            statusText = "Potential phishing";
-            labelClass = "phishing";
-            dotCount = 5;
-          }
-
-          setResult(statusText, labelClass, data);
-          setDots(dotCount);
+          renderResult(data);
         } catch (error) {
-          setResult("Request failed", "", { error: error.message });
+          renderError("The request could not be completed.", {
+            error: error.message,
+          });
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = "Analyze email";
+          form.removeAttribute("aria-busy");
         }
       });
     </script>
